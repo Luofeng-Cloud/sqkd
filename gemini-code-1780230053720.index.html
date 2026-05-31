@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>商丘师范学院梁园校区 - 快递站口碑榜</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .rating-star-active {
+            color: #fbbf24;
+        }
+        .rating-star-inactive {
+            color: #e2e8f0;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Mobile layout styling adjustments */
+        @media (max-width: 1023px) {
+            .mobile-hidden { display: none !important; }
+            .mobile-active-tab { display: flex !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 antialiased flex flex-col pb-24 lg:pb-12">
+
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200/80 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-200 flex items-center justify-center">
+                    <i class="fa-solid fa-boxes-packing text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                        商丘师院快递评价系统
+                        <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-medium">梁园校区</span>
+                    </h1>
+                    <p class="text-xs text-slate-500">商丘师范学院梁园校区快递站吐槽与红黑榜</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="hidden sm:flex flex-col items-end">
+                    <span class="text-xs text-slate-400">匿名身份</span>
+                    <span id="user-nickname-display" class="text-sm font-semibold text-indigo-600">加载中...</span>
+                </div>
+                <button onclick="regenerateNickname()" title="重置随机昵称" class="p-2 text-slate-500 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-all duration-200">
+                    <i class="fa-solid fa-rotate text-sm"></i>
+                </button>
+                <button onclick="openReviewModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl shadow-lg shadow-indigo-100 transition-all duration-200 flex items-center space-x-1.5">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>发速评</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-6">
+        <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+            <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+            
+            <div class="relative z-10 max-w-2xl">
+                <div class="inline-flex items-center space-x-2 bg-white/15 px-3 py-1 rounded-full text-xs font-semibold tracking-wide backdrop-blur-md mb-4">
+                    <i class="fa-solid fa-bullhorn animate-pulse"></i>
+                    <span>官方避坑指南 · 实时更新</span>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">
+                    不吐不快！商师梁园校区快递站真实大公开
+                </h2>
+                <p class="text-white/80 text-sm sm:text-base leading-relaxed mb-4">
+                    顺丰、京东、35号楼菜鸟、兔喜，到底哪家服务最好？又是谁经常暴利丢件？
+                    无需注册，即刻匿名评价，为商师学子避坑贡献你的一份力量！
+                </p>
+                <div class="flex flex-wrap gap-4 text-xs text-white/90">
+                    <span class="flex items-center gap-1.5 bg-black/15 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-user-secret text-indigo-200"></i> 全员匿名保护</span>
+                    <span class="flex items-center gap-1.5 bg-black/15 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-bolt text-yellow-300"></i> 极速实时数据</span>
+                    <span class="flex items-center gap-1.5 bg-black/15 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-shield-halved text-green-300"></i> 绿色交流社区</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-8 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <section id="mobile-stations-tab" class="lg:col-span-5 flex flex-col space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-store text-indigo-600"></i>
+                    四大快递网点
+                </h3>
+                <span class="text-xs text-slate-400">点击站点查看详情评语</span>
+            </div>
+
+            <div id="stations-container" class="space-y-4">
+                </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h4 class="font-bold text-sm text-slate-900 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-indigo-500"></i>
+                    商师口碑大盘
+                </h4>
+                <div class="space-y-4" id="stats-insights">
+                    </div>
+            </div>
+        </section>
+
+        <section id="mobile-reviews-tab" class="lg:col-span-7 flex flex-col space-y-6 mobile-hidden lg:flex">
+            
+            <div id="station-detail-banner" class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="flex flex-col space-y-2">
+                    <div class="flex items-center gap-3">
+                        <span id="detail-station-logo" class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-2xl shadow-inner">-</span>
+                        <div>
+                            <span class="text-xs text-indigo-600 font-semibold tracking-wide uppercase">正在查看</span>
+                            <h2 id="detail-station-name" class="text-2xl font-black text-slate-900">加载中...</h2>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span id="detail-station-location">加载中...</span>
+                    </p>
+                </div>
+
+                <div class="flex items-center space-x-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <div class="text-center">
+                        <span id="detail-station-average" class="text-3xl font-extrabold text-slate-900">0.0</span>
+                        <div class="flex justify-center text-xs text-amber-400 my-0.5" id="detail-station-stars"></div>
+                        <span class="text-[10px] text-slate-400 font-medium" id="detail-station-count">0 条真实评语</span>
+                    </div>
+                    <div class="h-10 w-px bg-slate-200"></div>
+                    <div class="flex flex-col space-y-1 w-32 text-[10px] text-slate-400">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 text-right">5★</span>
+                            <div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                <div id="bar-5" class="bg-amber-400 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 text-right">3★</span>
+                            <div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                <div id="bar-3" class="bg-amber-400 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-3 text-right">1★</span>
+                            <div class="w-20 bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                                <div id="bar-1" class="bg-rose-400 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-sm text-sm">
+                    <span class="text-slate-400 font-medium"><i class="fa-solid fa-arrow-up-wide-short"></i> 排序:</span>
+                    <button onclick="changeSort('time')" id="sort-time-btn" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 transition-all">最新发布</button>
+                    <button onclick="changeSort('likes')" id="sort-likes-btn" class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 transition-all">最多点赞</button>
+                </div>
+                <div class="flex items-center justify-between sm:justify-end gap-2 text-xs text-slate-400">
+                    <span>当前站点总共评论：<b id="reviews-count-pill" class="text-indigo-600 font-bold">0</b> 条</span>
+                </div>
+            </div>
+
+            <div id="reviews-feed" class="space-y-4">
+                </div>
+        </section>
+    </main>
+
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 grid grid-cols-2 lg:hidden shadow-lg h-16">
+        <button id="nav-btn-stations" onclick="setMobileTab('stations')" class="flex flex-col items-center justify-center text-indigo-600 font-bold transition-all text-xs">
+            <i class="fa-solid fa-store text-lg mb-0.5"></i>
+            <span>站点列表</span>
+        </button>
+        <button id="nav-btn-reviews" onclick="setMobileTab('reviews')" class="flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-medium transition-all text-xs">
+            <i class="fa-solid fa-comments text-lg mb-0.5"></i>
+            <span>详细评语</span>
+        </button>
+    </div>
+
+    <div id="review-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-all duration-300">
+        <div class="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <span class="text-indigo-600"><i class="fa-solid fa-paper-plane text-lg"></i></span>
+                    <h3 class="text-base font-bold text-slate-950">投递你的快递小意见</h3>
+                </div>
+                <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-lg transition-all">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
+                <div class="bg-indigo-50/70 border border-indigo-100 p-3 rounded-xl flex items-center justify-between text-xs text-indigo-950">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-mask text-indigo-500"></i>
+                        <span>匿名发表为：<b id="modal-nickname-display" class="font-bold text-indigo-700">神秘校友</b></span>
+                    </div>
+                    <button type="button" onclick="regenerateNickname()" class="text-[10px] text-indigo-600 hover:underline font-bold flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-rotate-left"></i>换个绰号
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">选择评价的快递站</label>
+                    <div class="grid grid-cols-2 gap-2.5" id="modal-station-selector">
+                        </div>
+                </div>
+
+                <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 flex flex-col items-center justify-center space-y-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">⭐ 快递站整体评分</label>
+                    <div class="flex space-x-2.5 my-1" id="star-selector-rating">
+                        </div>
+                    <span id="rating-num-display" class="text-sm font-black text-indigo-600">5.0 分</span>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">快捷评价印象标签</label>
+                    <div id="modal-tag-container" class="flex flex-wrap gap-1.5">
+                        </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label for="review-textarea" class="block text-xs font-bold text-slate-500 uppercase tracking-wider">详细评语吐槽 (必填)</label>
+                    <textarea id="review-textarea" rows="4" maxlength="400" placeholder="快件好找吗？老板态度凶吗？排队长不长？吐槽或者赞扬写在这里，至少输入5个字哦..." class="w-full text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all placeholder:text-slate-400"></textarea>
+                    <div class="flex justify-between text-[10px] text-slate-400">
+                        <span>真诚客观的评价最能帮到其他校友</span>
+                        <span id="char-counter">0/400</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex items-center justify-end space-x-3">
+                <button onclick="closeReviewModal()" class="px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all">取消</button>
+                <button onclick="submitReview()" class="px-5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-100 transition-all flex items-center space-x-1.5">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>立即匿名发布</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-20 lg:bottom-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+    <script>
+        // ⚠️【极其重要】：已经由助手为你自动填装最新的 Supabase 安全云主节点凭证！
+        const SUPABASE_URL = "https://txhosvsrrduyirwyusse.supabase.co"; 
+        const SUPABASE_ANON_KEY = "sb_publishable_-vzJaV0wzgjaTqxe_eGbtQ_14uND83t";
+
+        // 完美实例化并建立安全隔离的 Supabase API 数据流交换网关客户端对象
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 数据常量集定义：梁园校区全量骨干网点矩阵元数据模型
+        const stations = [
+            { id: 'sf', name: '顺丰快递站', logo: '丰', bg: 'bg-slate-900', text: 'text-white', location: '梁园校区北门外西侧商铺', badge: '速度担当' },
+            { id: 'jd', name: '京东快递站', logo: '东', bg: 'bg-red-600', text: 'text-white', location: '梁园校区北门旁京东便利店隔壁', badge: '包装完好' },
+            { id: 'cainiao35', name: '35号楼菜鸟驿站', logo: '鸟', bg: 'bg-blue-500', text: 'text-white', location: '梁园校区学生宿舍35号楼一楼架空层', badge: '寄取极便' },
+            { id: 'tuxi', name: '兔喜快递站', logo: '兔', bg: 'bg-amber-500', text: 'text-white', location: '梁园校区南区17号楼西侧小巷内', badge: '性价比高' }
+        ];
+
+        // 匿名保护机制：基于词缀矩阵洗牌的非确定性本地无感身份生成模组数据字典
+        const nicknamePrefix = ['35号楼', '中原路', '梁园校区', '归德北路', '1号教学楼', '平原路', '高数必过', '外卖狂魔', '抢件冠军', '踩点取件', '寄件大户'];
+        const nicknameSuffix = ['快递判官', '干饭王', '小锦鲤', '退货狂人', '尾款人', '暴走少年', '寻宝达人', '低头族', '熬夜专家', '学霸本霸', '吃瓜群众'];
+        
+        // 全局动态响应式状态机参数变量
+        let selectedStationId = 'sf';
+        let currentNickname = '';
+        let sortCriterion = 'time'; 
+        let activeRating = 5; 
+        let selectedTags = [];
+        let localReviews = []; 
+
+        // 针对特定节点的快捷标签辅助输入上下文特征池
+        const helperTags = {
+            sf: ['找件飞快', '包裹完美', '服务周到', '位置偏远', '高效率'],
+            jd: ['小哥礼貌', '送货上门', '纸箱无损', '速度给力', '位置好找'],
+            cainiao35: ['距离超近', '取件码清晰', '下课排巨队', '位置挤', '自助方便'],
+            tuxi: ['老板幽默', '价格公道', '短信及时', '找件难', '排队久']
+        };
+
+        // 数据中枢：拉取全量云端评论流
+        async function fetchReviewsFromCloud() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('reviews')
+                    .select('*');
+
+                if (error) throw error;
+                localReviews = data || [];
+                renderStatsAndInterface();
+            } catch (err) {
+                console.error("数据连接异常或表单缺失，启动本地弹性预载缓冲流：", err);
+                const cached = localStorage.getItem('shangqiu_express_reviews');
+                if (cached) localReviews = JSON.parse(cached);
+                renderStatsAndInterface();
+            }
+        }
+
+        // 核心统计算法：节点评价指标聚合离散推演引擎
+        function getStationStats(stationId) {
+            const stationReviews = localReviews.filter(r => r.stationId === stationId);
+            const count = stationReviews.length;
+            if (count === 0) return { avg: 0, count: 0, bar5: 0, bar3: 0, bar1: 0 };
+
+            let sum = 0;
+            let count5 = 0, count3 = 0, count1 = 0;
+
+            stationReviews.forEach(r => {
+                const score = parseFloat(r.rating || 5);
+                sum += score;
+                if (score >= 4.5) count5++;
+                else if (score >= 3.0) count3++;
+                else count1++;
+            });
+
+            return {
+                avg: (sum / count).toFixed(1),
+                count: count,
+                bar5: Math.round((count5 / count) * 100),
+                bar3: Math.round((count3 / count) * 100),
+                bar1: Math.round((count1 / count) * 100)
+            };
+        }
+
+        // 渲染管线：更新全部核心业务卡片及大盘柱状体宏观指数界面
+        function renderStatsAndInterface() {
+            const stationsContainer = document.getElementById('stations-container');
+            stationsContainer.innerHTML = '';
+
+            stations.forEach(station => {
+                const stats = getStationStats(station.id);
+                const isActive = station.id === selectedStationId;
+                
+                let starMarkup = '';
+                const fullStars = Math.floor(parseFloat(stats.avg));
+                for(let i=1; i<=5; i++) {
+                    if (i <= fullStars) {
+                        starMarkup += '<i class="fa-solid fa-star text-amber-400 text-xs"></i>';
+                    } else if (i - 0.5 <= parseFloat(stats.avg)) {
+                        starMarkup += '<i class="fa-solid fa-star-half-stroke text-amber-400 text-xs"></i>';
+                    } else {
+                        starMarkup += '<i class="fa-regular fa-star text-slate-200 text-xs"></i>';
+                    }
+                }
+
+                const activeClasses = isActive 
+                    ? 'border-indigo-600 bg-indigo-50/40 shadow-md ring-2 ring-indigo-500/10' 
+                    : 'border-slate-200/80 bg-white hover:border-indigo-300 hover:shadow-sm';
+
+                stationsContainer.innerHTML += `
+                    <div onclick="selectStation('${station.id}')" class="p-5 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between ${activeClasses} group relative">
+                        ${isActive ? '<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600 rounded-l-2xl"></div>' : ''}
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-11 h-11 rounded-xl ${station.bg} ${station.text} flex items-center justify-center font-bold text-base shadow-sm">${station.logo}</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors flex items-center gap-1.5 text-sm sm:text-base">${station.name}</h4>
+                                    <p class="text-[11px] text-slate-400 mt-0.5 max-w-[200px] truncate"><i class="fa-solid fa-location-dot"></i> ${station.location}</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-semibold">${station.badge}</span>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <div class="flex items-center space-x-1">
+                                <span class="text-sm font-extrabold text-slate-900">${stats.avg > 0 ? stats.avg : '暂无'}</span>
+                                <div class="flex space-x-0.5">${stats.avg > 0 ? starMarkup : '<span class="text-slate-400 text-[10px]">等待首位评分</span>'}</div>
+                            </div>
+                            <span class="text-slate-400 text-[10px]"><i class="fa-solid fa-comment-dots"></i> ${stats.count} 条评语</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 大盘宏观指数比对横条图自动比对同步
+            const statsInsights = document.getElementById('stats-insights');
+            statsInsights.innerHTML = '';
+            stations.forEach(st => {
+                const stat = getStationStats(st.id);
+                const percent = Math.min(100, (parseFloat(stat.avg) / 5) * 100);
+                const colorMap = { sf: 'bg-slate-900', jd: 'bg-rose-500', cainiao35: 'bg-blue-500', tuxi: 'bg-amber-500' };
+
+                statsInsights.innerHTML += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-medium text-slate-700">${st.name}</span>
+                            <span class="font-bold text-slate-900">${stat.avg > 0 ? stat.avg + ' 分' : '评测中'}</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div class="${colorMap[st.id]} h-full rounded-full transition-all duration-500" style="width: ${stat.avg > 0 ? percent : 0}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 联动重构主反馈视窗卡片内容
+            const currentStation = stations.find(s => s.id === selectedStationId);
+            const detailStats = getStationStats(selectedStationId);
+
+            document.getElementById('detail-station-name').innerText = currentStation.name;
+            document.getElementById('detail-station-location').innerText = currentStation.location;
+            document.getElementById('detail-station-logo').innerText = currentStation.logo;
+            document.getElementById('detail-station-logo').className = `w-14 h-14 rounded-2xl ${currentStation.bg} ${currentStation.text} flex items-center justify-center font-bold text-2xl shadow-inner`;
+            document.getElementById('detail-station-average').innerText = detailStats.avg;
+            document.getElementById('detail-station-count').innerText = `${detailStats.count} 条真实口碑`;
+
+            const detailStarsBox = document.getElementById('detail-station-stars');
+            detailStarsBox.innerHTML = '';
+            const fullStars = Math.floor(parseFloat(detailStats.avg));
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) {
+                    detailStarsBox.innerHTML += '<i class="fa-solid fa-star"></i>';
+                } else if (i - 0.5 <= parseFloat(detailStats.avg)) {
+                    detailStarsBox.innerHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
+                } else {
+                    detailStarsBox.innerHTML += '<i class="fa-regular fa-star text-slate-300"></i>';
+                }
+            }
+
+            document.getElementById('bar-5').style.width = `${detailStats.bar5}%`;
+            document.getElementById('bar-3').style.width = `${detailStats.bar3}%`;
+            document.getElementById('bar-1').style.width = `${detailStats.bar1}%`;
+
+            renderReviewsFeed();
+        }
+
+        // 渲染流：重组生成主体动态时间轴评语列表
+        function renderReviewsFeed() {
+            const feedContainer = document.getElementById('reviews-feed');
+            feedContainer.innerHTML = '';
+
+            let filtered = localReviews.filter(r => r.stationId === selectedStationId);
+            
+            if (sortCriterion === 'time') {
+                filtered.sort((a,b) => b.timestamp - a.timestamp);
+            } else {
+                filtered.sort((a,b) => (b.likes || 0) - (a.likes || 0));
+            }
+
+            document.getElementById('reviews-count-pill').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                feedContainer.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200/80 shadow-sm text-slate-400">
+                        <i class="fa-regular fa-comments text-4xl mb-3 text-slate-300"></i>
+                        <p class="text-sm font-semibold">此处尚无评语</p>
+                        <p class="text-xs text-slate-400 mt-1">点击右上角“发速评”快速为此快递站拿下首评吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(review => {
+                const formattedTime = formatTimestamp(review.timestamp);
+                const hasLiked = (review.likedBy || []).includes(getUserFingerprint());
+
+                let starMarkup = '';
+                for(let i=1; i<=5; i++) {
+                    if (i <= review.rating) {
+                        starMarkup += '<i class="fa-solid fa-star text-amber-400 text-xs"></i>';
+                    } else {
+                        starMarkup += '<i class="fa-regular fa-star text-slate-200 text-xs"></i>';
+                    }
+                }
+
+                const colors = ['bg-indigo-500', 'bg-teal-500', 'bg-blue-500', 'bg-pink-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500'];
+                const randColor = colors[review.nickname.length % colors.length];
+
+                let tagsMarkup = '';
+                if (review.tags && review.tags.length > 0) {
+                    review.tags.forEach(t => {
+                        tagsMarkup += `<span class="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-medium">${t}</span>`;
+                    });
+                }
+
+                feedContainer.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm transition-all duration-300 hover:shadow-md flex flex-col space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="w-8 h-8 rounded-full ${randColor} text-white flex items-center justify-center text-xs font-bold shadow-sm">${review.nickname.charAt(0)}</div>
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-slate-900">${review.nickname}</span>
+                                    <span class="text-[9px] text-slate-400">${formattedTime}</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <div class="flex space-x-0.5">${starMarkup}</div>
+                                <span class="text-[9px] text-slate-400 mt-0.5">整体评分 ${review.rating}分</span>
+                            </div>
+                        </div>
+
+                        <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${review.comment}</p>
+                        ${tagsMarkup ? `<div class="flex flex-wrap gap-1.5">${tagsMarkup}</div>` : ''}
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[10px] text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded flex items-center gap-1">
+                                <i class="fa-solid fa-user-shield text-[9px]"></i> 身份已通过匿名分布式验真
+                            </span>
+                            <button onclick="upvoteReview('${review.id}')" class="flex items-center space-x-1.5 px-3 py-1 rounded-lg border text-xs transition-all duration-200 ${hasLiked ? 'bg-indigo-600 border-indigo-600 text-white' : 'bg-white border-slate-200 hover:border-indigo-300 text-slate-500 hover:text-indigo-600'}">
+                                <i class="fa-regular fa-thumbs-up ${hasLiked ? 'text-white' : ''}"></i>
+                                <span class="font-bold">${review.likes || 0}</span>
+                                <span class="text-[10px] font-medium">有用</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 交互逻辑：选定目标站点事件处理程序
+        window.selectStation = function(stationId) {
+            selectedStationId = stationId;
+            renderStatsAndInterface();
+            if (window.innerWidth < 1024) {
+                setMobileTab('reviews');
+            }
+        };
+
+        // 视图逻辑：移动端独立选项卡视图调度控制器
+        window.setMobileTab = function(tabName) {
+            const tabStations = document.getElementById('mobile-stations-tab');
+            const tabReviews = document.getElementById('mobile-reviews-tab');
+            const btnStations = document.getElementById('nav-btn-stations');
+            const btnReviews = document.getElementById('nav-btn-reviews');
+
+            if (tabName === 'stations') {
+                tabStations.classList.remove('mobile-hidden');
+                tabReviews.classList.add('mobile-hidden');
+                btnStations.className = "flex flex-col items-center justify-center text-indigo-600 font-bold transition-all text-xs";
+                btnReviews.className = "flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-medium transition-all text-xs";
+            } else {
+                tabStations.classList.add('mobile-hidden');
+                tabReviews.classList.remove('mobile-hidden');
+                tabReviews.classList.add('mobile-active-tab');
+                btnReviews.className = "flex flex-col items-center justify-center text-indigo-600 font-bold transition-all text-xs";
+                btnStations.className = "flex flex-col items-center justify-center text-slate-400 hover:text-slate-600 font-medium transition-all text-xs";
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // 交互逻辑：切换排序依赖参数控制器
+        window.changeSort = function(criterion) {
+            sortCriterion = criterion;
+            const timeBtn = document.getElementById('sort-time-btn');
+            const likesBtn = document.getElementById('sort-likes-btn');
+            if (criterion === 'time') {
+                timeBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 transition-all';
+                likesBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 transition-all';
+            } else {
+                likesBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 transition-all';
+                timeBtn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 transition-all';
+            }
+            renderReviewsFeed();
+        };
+
+        // 一键实现云端无感点赞/取消点赞
+        window.upvoteReview = async function(reviewId) {
+            const fingerprint = getUserFingerprint();
+            const targetReview = localReviews.find(r => String(r.id) === String(reviewId));
+            if (!targetReview) return;
+
+            let likedBy = targetReview.likedBy || [];
+            let likes = targetReview.likes || 0;
+            const isUnvoting = likedBy.includes(fingerprint);
+
+            if (isUnvoting) {
+                likedBy = likedBy.filter(id => id !== fingerprint);
+                likes = Math.max(0, likes - 1);
+                showToast("已取消赞同该评价", "info");
+            } else {
+                likedBy.push(fingerprint);
+                likes += 1;
+                showToast("感谢你的客观反馈！", "success");
+            }
+
+            // 本地 UI 渲染先响应，提升流畅感
+            targetReview.likes = likes;
+            targetReview.likedBy = likedBy;
+            renderStatsAndInterface();
+
+            // 判定是否属于临时本地降级数据，如果是则不向上同步变更
+            if (String(reviewId).startsWith('local-')) return;
+
+            // 数据无感推送到 Supabase
+            await supabaseClient
+                .from('reviews')
+                .update({ likes, likedBy })
+                .eq('id', reviewId);
+        };
+
+        // 安全指纹：基于浏览器级持久缓存构造隐式高强度哈希设备标识戳
+        function getUserFingerprint() {
+            let fp = localStorage.getItem('shangqiu_express_user_fp');
+            if (!fp) {
+                fp = 'fp-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
+                localStorage.setItem('shangqiu_express_user_fp', fp);
+            }
+            return fp;
+        }
+
+        // 时间演算算法：多级自适应时间差量美化器
+        function formatTimestamp(ts) {
+            if (!ts) return '刚刚';
+            const diff = Date.now() - ts;
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
+            const date = new Date(ts);
+            return `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // 交互控制：开启模态录入抽屉
+        window.openReviewModal = function() {
+            document.getElementById('review-modal').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('review-modal').classList.remove('opacity-0');
+                document.getElementById('review-modal').firstElementChild.classList.remove('scale-95');
+            }, 50);
+
+            const selCont = document.getElementById('modal-station-selector');
+            selCont.innerHTML = '';
+            stations.forEach(st => {
+                const isSelected = st.id === selectedStationId;
+                selCont.innerHTML += `
+                    <button type="button" onclick="setModalSelectedStation('${st.id}')" id="modal-opt-${st.id}" class="py-2.5 px-3 rounded-xl border-2 text-xs font-bold transition-all text-left flex items-center justify-between ${isSelected ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900' : 'border-slate-200 text-slate-600 hover:border-slate-300'}">
+                        <span>${st.name}</span>
+                        ${isSelected ? '<i class="fa-solid fa-circle-check text-indigo-600"></i>' : ''}
+                    </button>
+                `;
+            });
+
+            document.getElementById('modal-nickname-display').innerText = currentNickname;
+            activeRating = 5;
+            selectedTags = [];
+            document.getElementById('review-textarea').value = '';
+            document.getElementById('char-counter').innerText = '0/400';
+
+            updateModalInteractiveRatings();
+            renderModalTags();
+        };
+
+        // 交互控制：平滑收纳录入模态框窗口
+        window.closeReviewModal = function() {
+            document.getElementById('review-modal').classList.add('opacity-0');
+            document.getElementById('review-modal').firstElementChild.classList.add('scale-95');
+            setTimeout(() => { document.getElementById('review-modal').classList.add('hidden'); }, 300);
+        };
+
+        // 交互逻辑：模态内切换评价终点目标站
+        window.setModalSelectedStation = function(stationId) {
+            selectedStationId = stationId;
+            stations.forEach(st => {
+                const btn = document.getElementById(`modal-opt-${st.id}`);
+                if (st.id === stationId) {
+                    btn.className = "py-2.5 px-3 rounded-xl border-2 border-indigo-600 bg-indigo-50/50 text-indigo-900 text-xs font-bold transition-all text-left flex items-center justify-between";
+                    btn.innerHTML = `<span>${st.name}</span> <i class="fa-solid fa-circle-check text-indigo-600"></i>`;
+                } else {
+                    btn.className = "py-2.5 px-3 rounded-xl border-2 border-slate-200 text-slate-600 hover:border-slate-300 text-xs font-bold transition-all text-left flex items-center justify-between";
+                    btn.innerHTML = `<span>${st.name}</span>`;
+                }
+            });
+            selectedTags = [];
+            renderModalTags();
+        };
+
+        // 重新构建星星互动机制（整体评分）
+        function updateModalInteractiveRatings() {
+            const container = document.getElementById('star-selector-rating');
+            container.innerHTML = '';
+            for(let i=1; i<=5; i++) {
+                const isActive = i <= activeRating;
+                container.innerHTML += `
+                    <button type="button" onclick="setRatingValue(${i})" class="text-2xl focus:outline-none transition-transform hover:scale-125 duration-100">
+                        <i class="fa-solid fa-star ${isActive ? 'text-amber-400' : 'text-slate-200'}"></i>
+                    </button>
+                `;
+            }
+            document.getElementById('rating-num-display').innerText = activeRating.toFixed(1) + " 分";
+        }
+
+        window.setRatingValue = function(score) {
+            activeRating = score;
+            updateModalInteractiveRatings();
+        };
+
+        // 交互组件：根据焦点网点渲染可用快捷标签选择集
+        function renderModalTags() {
+            const container = document.getElementById('modal-tag-container');
+            container.innerHTML = '';
+            const currentStationTags = helperTags[selectedStationId] || [];
+            currentStationTags.forEach(tag => {
+                const isSelected = selectedTags.includes(tag);
+                const activeClass = isSelected ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100';
+                container.innerHTML += `<button type="button" onclick="toggleTag('${tag}')" class="text-xs px-3 py-1.5 rounded-xl border transition-all duration-150 ${activeClass}">${tag}</button>`;
+            });
+        }
+
+        // 内部算法：切换备选特征标签元素入栈出栈控制器
+        window.toggleTag = function(tag) {
+            if (selectedTags.includes(tag)) {
+                selectedTags = selectedTags.filter(t => t !== tag);
+            } else {
+                if (selectedTags.length >= 3) {
+                    showToast("最多选择 3 个标签", "info");
+                    return;
+                }
+                selectedTags.push(tag);
+            }
+            renderModalTags();
+        };
+
+        // 监听器：文本域动态字数计数同步回调
+        document.getElementById('review-textarea').addEventListener('input', function(e) {
+            document.getElementById('char-counter').innerText = `${e.target.value.length}/400`;
+        });
+
+        // 核心修改：数据发射一键打包提交到 Supabase，并增强异常安全降级机制
+        window.submitReview = async function() {
+            const commentVal = document.getElementById('review-textarea').value.trim();
+            if (commentVal.length < 5) {
+                showToast("评语写得再详细一点吧（至少输入5个字）！", "warning");
+                return;
+            }
+
+            // 严格对齐 Supabase 创建的核心数据表 reviews 字段结构
+            const newReviewObj = {
+                stationId: selectedStationId,
+                nickname: currentNickname,
+                rating: parseFloat(activeRating), 
+                comment: commentVal,
+                tags: selectedTags,
+                timestamp: Date.now(),
+                likes: 0,
+                likedBy: []
+            };
+
+            try {
+                // 提交到 Supabase 云端
+                const { data, error } = await supabaseClient
+                    .from('reviews')
+                    .insert([newReviewObj])
+                    .select(); // 使用 select() 让云端返回自动生成的 id
+
+                if (error) throw error;
+                
+                showToast("🎉 匿名评语已同步发射上云！", "success");
+                // 重新拉取最新的云端数据
+                await fetchReviewsFromCloud(); 
+            } catch (e) {
+                console.error("Supabase 写入中断或架构未完成，启用无缝本地缓存降级:", e);
+                showToast("连接异常，已自动为您安全暂存到本地", "warning");
+                
+                // 本地降级生成唯一标识
+                newReviewObj.id = 'local-' + Date.now();
+                localReviews.unshift(newReviewObj);
+                localStorage.setItem('shangqiu_express_reviews', JSON.stringify(localReviews));
+                renderStatsAndInterface();
+            }
+            closeReviewModal();
+        };
+
+        // 操作逻辑：重构洗牌派生全新的随机校园面具身份
+        window.regenerateNickname = function() {
+            const p = nicknamePrefix[Math.floor(Math.random() * nicknamePrefix.length)];
+            const s = nicknameSuffix[Math.floor(Math.random() * nicknameSuffix.length)];
+            currentNickname = p + s;
+            localStorage.setItem('shangqiu_express_user_nickname', currentNickname);
+            document.getElementById('user-nickname-display').innerText = currentNickname;
+            if (document.getElementById('modal-nickname-display')) {
+                document.getElementById('modal-nickname-display').innerText = currentNickname;
+            }
+            showToast("✨ 身份切换为：" + currentNickname, "success");
+        };
+
+        // UI 视图组件：吐司轻量全局通知动态横幅构造器
+        function showToast(message, type = "info") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let colorClasses = "bg-white text-slate-800 border-slate-200";
+            let iconMarkup = '<i class="fa-solid fa-circle-info text-blue-500"></i>';
+
+            if (type === "success") {
+                colorClasses = "bg-emerald-50 text-emerald-950 border-emerald-200";
+                iconMarkup = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+            } else if (type === "warning") {
+                colorClasses = "bg-amber-50 text-amber-950 border-amber-200";
+                iconMarkup = '<i class="fa-solid fa-triangle-exclamation text-amber-500"></i>';
+            }
+            toast.className = `p-4 rounded-xl border shadow-xl flex items-center space-x-3 pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300 max-w-sm ${colorClasses}`;
+            toast.innerHTML = `<div class="text-base flex-shrink-0">${iconMarkup}</div><div class="text-xs font-semibold">${message}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3500);
+        }
+
+        // 系统初始化生命周期挂载
+        window.onload = function() {
+            // 初始化匿名昵称
+            const stored = localStorage.getItem('shangqiu_express_user_nickname');
+            currentNickname = stored || (nicknamePrefix[Math.floor(Math.random() * nicknamePrefix.length)] + nicknameSuffix[Math.floor(Math.random() * nicknameSuffix.length)]);
+            localStorage.setItem('shangqiu_express_user_nickname', currentNickname);
+            document.getElementById('user-nickname-display').innerText = currentNickname;
+
+            // 针对移动端进行分辨率初始匹配
+            if (window.innerWidth < 1024) {
+                setMobileTab('stations');
+            }
+
+            // 启动数据流
+            fetchReviewsFromCloud();
+        };
+    </script>
+</body>
+</html>
