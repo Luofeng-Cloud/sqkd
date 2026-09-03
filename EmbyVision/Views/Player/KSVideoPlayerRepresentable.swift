@@ -61,7 +61,6 @@ public struct VideoPlayerCoreView: View {
                 options.hardwareDecode = true
                 KSOptions.firstPlayerType = KSMEPlayer.self
                 KSOptions.secondPlayerType = KSAVPlayer.self
-                options.canProcessPicture = true
                 options.preferredForwardBufferDuration = 30.0
             }
     }
