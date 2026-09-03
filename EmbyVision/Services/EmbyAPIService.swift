@@ -92,7 +92,7 @@ public class EmbyAPIService: ObservableObject {
         }
         
         do {
-            let authResponse = try JSONDecoder().decode(EmbyAuthResponse.self, data: data)
+            let authResponse = try JSONDecoder().decode(EmbyAuthResponse.self, from: data)
             return authResponse
         } catch {
             throw EmbyAPIError.decodingError(error.localizedDescription)
@@ -116,7 +116,7 @@ public class EmbyAPIService: ObservableObject {
             throw EmbyAPIError.serverError("无法获取媒体库视图")
         }
         
-        let res = try JSONDecoder().decode(EmbyItemsResponse.self, data: data)
+        let res = try JSONDecoder().decode(EmbyItemsResponse.self, from: data)
         return res.items
     }
     
@@ -166,7 +166,7 @@ public class EmbyAPIService: ObservableObject {
             throw EmbyAPIError.serverError("获取影片列表失败")
         }
         
-        let res = try JSONDecoder().decode(EmbyItemsResponse.self, data: data)
+        let res = try JSONDecoder().decode(EmbyItemsResponse.self, from: data)
         return res.items
     }
     
@@ -186,7 +186,7 @@ public class EmbyAPIService: ObservableObject {
         request.setValue(authHeader(token: token), forHTTPHeaderField: "X-Emby-Authorization")
         
         let (data, _) = try await session.data(for: request)
-        let res = try JSONDecoder().decode(EmbyItemsResponse.self, data: data)
+        let res = try JSONDecoder().decode(EmbyItemsResponse.self, from: data)
         return res.items
     }
     
@@ -203,7 +203,7 @@ public class EmbyAPIService: ObservableObject {
         request.setValue(authHeader(token: token), forHTTPHeaderField: "X-Emby-Authorization")
         
         let (data, _) = try await session.data(for: request)
-        return try JSONDecoder().decode(EmbyItem.self, data: data)
+        return try JSONDecoder().decode(EmbyItem.self, from: data)
     }
     
     // MARK: - 6. 获取 PlaybackInfo (携带超级 DirectPlay 描述符，锁定原画质直出)
@@ -241,7 +241,7 @@ public class EmbyAPIService: ObservableObject {
             throw EmbyAPIError.serverError("无法获取播放信息")
         }
         
-        return try JSONDecoder().decode(PlaybackInfoResponse.self, data: data)
+        return try JSONDecoder().decode(PlaybackInfoResponse.self, from: data)
     }
     
     // MARK: - 7. 播放进度同步上报 (保证 iPhone 与电脑/电视进度实时一致)

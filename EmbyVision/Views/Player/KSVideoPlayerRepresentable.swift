@@ -59,8 +59,8 @@ public struct VideoPlayerCoreView: View {
             .ignoresSafeArea()
             .onAppear {
                 options.hardwareDecode = true
-                options.firstPlayerType = KSMEPlayer.self
-                options.secondPlayerType = KSAVPlayer.self
+                KSOptions.firstPlayerType = KSMEPlayer.self
+                KSOptions.secondPlayerType = KSAVPlayer.self
                 options.canProcessPicture = true
                 options.preferredForwardBufferDuration = 30.0
             }
