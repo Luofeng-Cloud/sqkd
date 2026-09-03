@@ -13,7 +13,7 @@ settings:
 packages:
   KSPlayer:
     url: https://github.com/kingslay/KSPlayer.git
-    from: 2.4.0
+    branch: master
 
 targets:
   EmbyVision:
