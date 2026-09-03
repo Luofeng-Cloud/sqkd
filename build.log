@@ -1,0 +1,20 @@
+Command line invocation:
+    /Applications/Xcode_15.4.app/Contents/Developer/usr/bin/xcodebuild clean build -project EmbyVision.xcodeproj -scheme EmbyVision -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES CODE_SIGN_STYLE=Manual COMPILER_INDEX_STORE_ENABLE=NO
+
+User defaults from command line:
+    IDEDerivedDataPathOverride = /Users/runner/work/sqkd/sqkd/build
+    IDEPackageSupportUseBuiltinSCM = YES
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = -
+    CODE_SIGN_STYLE = Manual
+    CODE_SIGNING_ALLOWED = YES
+    CODE_SIGNING_REQUIRED = NO
+    COMPILER_INDEX_STORE_ENABLE = NO
+    SDKROOT = iphoneos17.5
+
+2026-09-03 13:10:48.309 xcodebuild[2036:9019] Writing error result bundle to /var/folders/g3/pffjr_y96bq06blnkf72x_hw0000gn/T/ResultBundle_2026-03-09_13-10-0048.xcresult
+xcodebuild: error: Unable to read project 'EmbyVision.xcodeproj'.
+	Reason: The project ‘EmbyVision’ cannot be opened because it is in a future Xcode project file format (77). Adjust the project format using a compatible version of Xcode to allow it to be opened by this version of Xcode.
+
+
