@@ -27,11 +27,7 @@ jobs:
         run: |
           xcodegen generate
 
-      - name: Resolve Swift Package Dependencies
-        run: |
-          xcodebuild -resolvePackageDependencies -project EmbyVision.xcodeproj -scheme EmbyVision
-
-      - name: Build Archive (Unsigned for Sideload / TrollStore)
+      - name: Build Archive & Package IPA
         run: |
           xcodebuild -project EmbyVision.xcodeproj \
             -scheme EmbyVision \
@@ -41,15 +37,14 @@ jobs:
             archive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
+            CODE_SIGN_IDENTITY="" \
+            COMPILER_INDEX_STORE_ENABLE=NO
 
-      - name: Package Payload into IPA
-        run: |
           mkdir -p build/Payload
           cp -r "build/EmbyVision.xcarchive/Products/Applications/EmbyVision.app" build/Payload/
           cd build
           zip -r -9 EmbyVision.ipa Payload
-          echo "IPA 生成成功: build/EmbyVision.ipa"
+          echo "IPA 打包完成: build/EmbyVision.ipa"
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4

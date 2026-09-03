@@ -4,6 +4,7 @@ options:
   deploymentTarget:
     iOS: 16.0
   xcodeVersion: "15.0"
+  createIntermediateGroups: true
 settings:
   SWIFT_VERSION: "5.9"
   IPHONEOS_DEPLOYMENT_TARGET: "16.0"
@@ -23,6 +24,9 @@ targets:
       - path: EmbyVision
     dependencies:
       - package: KSPlayer
+        product: KSPlayer
+    scheme:
+      gatherCoverageData: false
     info:
       path: EmbyVision/Resources/Info.plist
     settings:
