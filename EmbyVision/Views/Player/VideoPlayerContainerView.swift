@@ -13,65 +13,67 @@ public struct VideoPlayerContainerView: View {
     @State private var duration: Double = 0.0
     @State private var isPlaying: Bool = true
     @State private var isBuffering: Bool = false
-    @State private var showControls: Bool = true
-    @State private var isLocked: Bool = false
-    
-    @State private var selectedAudioIndex: Int = 0
-    @State private var selectedSubtitleIndex: Int = 0
     
     public var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
             if let config = playerConfig {
-                KSVideoPlayerRepresentable(
+                VideoPlayerCoreView(
                     config: config,
                     currentTime: $currentTime,
                     duration: $duration,
                     isPlaying: $isPlaying,
                     isBuffering: $isBuffering,
-                    selectedAudioTrackIndex: $selectedAudioIndex,
-                    selectedSubtitleTrackIndex: $selectedSubtitleIndex,
                     onPlaybackEnded: {
                         dismiss()
                     }
                 )
                 .ignoresSafeArea()
-                .onChange(of: currentTime) { newTime in
-                    PlaybackSyncManager.shared.updatePosition(seconds: newTime, isPaused: !isPlaying)
-                }
                 
-                PlayerOverlayView(
-                    title: item.name,
-                    isDolbyVision: config.isDolbyVision,
-                    dvBadgeText: config.dolbyVisionBadge,
-                    resolutionBadge: item.resolutionBadge,
-                    currentTime: $currentTime,
-                    duration: $duration,
-                    isPlaying: $isPlaying,
-                    isBuffering: $isBuffering,
-                    showControls: $showControls,
-                    isLocked: $isLocked,
-                    audioStreams: config.audioStreams,
-                    subtitleStreams: config.subtitleStreams,
-                    selectedAudioIndex: $selectedAudioIndex,
-                    selectedSubtitleIndex: $selectedSubtitleIndex,
-                    onDismiss: {
-                        PlaybackSyncManager.shared.stopSession()
-                        dismiss()
-                    },
-                    onSeek: { targetTime in
-                        currentTime = targetTime
-                        // Seek logic will update playback position
-                    },
-                    onTogglePlayPause: {
-                        isPlaying.toggle()
-                    },
-                    onSeekBy: { delta in
-                        let target = max(0.0, min(duration, currentTime + delta))
-                        currentTime = target
+                // 顶部返回与杜比视界高光提示浮层
+                VStack {
+                    HStack {
+                        Button(action: {
+                            PlaybackSyncManager.shared.stopSession()
+                            dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                        }
+                        
+                        Spacer()
+                        
+                        if config.isDolbyVision {
+                            HStack(spacing: 4) {
+                                Image(systemName: "sparkles")
+                                    .font(.system(size: 10, weight: .black))
+                                Text(config.dolbyVisionBadge ?? "DOLBY VISION")
+                                    .font(.system(size: 10, weight: .heavy))
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(red: 0.98, green: 0.85, blue: 0.35), Color(red: 0.85, green: 0.6, blue: 0.1)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .foregroundColor(.black)
+                            .cornerRadius(5)
+                            .shadow(color: Color.yellow.opacity(0.4), radius: 4)
+                        }
                     }
-                )
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                    
+                    Spacer()
+                }
             } else if isLoading {
                 VStack(spacing: 16) {
                     ProgressView()

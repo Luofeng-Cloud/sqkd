@@ -27,25 +27,31 @@ jobs:
         run: |
           xcodegen generate
 
-      - name: Build Archive & Package IPA
+      - name: Build Archive
+        id: build_step
         run: |
-          set -o pipefail
-          xcodebuild clean archive \
-            -project EmbyVision.xcodeproj \
+          xcodebuild -project EmbyVision.xcodeproj \
             -scheme EmbyVision \
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "build/EmbyVision.xcarchive" \
+            archive \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             AD_HOC_CODE_SIGNING_ALLOWED=YES \
-            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee xcodebuild.log || {
-              echo "::error::Build Archive Failed! Recent log lines:"
-              tail -n 40 xcodebuild.log
-              exit 1
-            }
+            COMPILER_INDEX_STORE_ENABLE=NO 2>&1 | tee xcodebuild.log
 
+      - name: Upload Build Log If Failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-log
+          path: xcodebuild.log
+          retention-days: 7
+
+      - name: Package Payload into IPA
+        run: |
           mkdir -p build/Payload
           cp -r "build/EmbyVision.xcarchive/Products/Applications/EmbyVision.app" build/Payload/
           cd build
