@@ -5,9 +5,6 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: macos-14
@@ -17,9 +14,8 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set Xcode Version
+      - name: Verify Xcode Version
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
           xcodebuild -version
 
       - name: Install XcodeGen
@@ -43,16 +39,7 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=YES \
             CODE_SIGN_STYLE=Manual \
-            COMPILER_INDEX_STORE_ENABLE=NO > build.log 2>&1
-
-      - name: Commit Error Log to Repo If Failed
-        if: failure()
-        run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add build.log
-          git commit -m "chore(debug): capture xcodebuild error log" || true
-          git push origin main || true
+            COMPILER_INDEX_STORE_ENABLE=NO
 
       - name: Package Payload into IPA
         run: |
