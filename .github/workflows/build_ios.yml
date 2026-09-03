@@ -27,34 +27,37 @@ jobs:
         run: |
           xcodegen generate
 
-      - name: Build Archive
+      - name: Build Application Binary
         run: |
           mkdir -p build
-          xcodebuild -project EmbyVision.xcodeproj \
+          xcodebuild clean build \
+            -project EmbyVision.xcodeproj \
             -scheme EmbyVision \
             -configuration Release \
             -destination "generic/platform=iOS" \
-            -archivePath "$PWD/build/EmbyVision.xcarchive" \
-            archive \
+            -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES \
             COMPILER_INDEX_STORE_ENABLE=NO > build.log 2>&1 || {
-              echo "=== XCODEBUILD ERROR SUMMARY ==="
-              grep -E -A 2 -B 1 "error:|fatal error:" build.log || tail -n 80 build.log
+              echo "### Build Failed Log Tail" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              tail -n 60 build.log >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat build.log | grep -E -A 2 -B 1 "error:|fatal error:" || tail -n 60 build.log
               exit 1
             }
 
       - name: Package Payload into IPA
         run: |
-          ARCHIVE_APP=$(find build -name "*.app" -type d | head -n 1)
-          echo "Found compiled app at: $ARCHIVE_APP"
+          COMPILED_APP=$(find build/Build/Products/Release-iphoneos -name "*.app" -type d | head -n 1)
+          echo "Found compiled app: $COMPILED_APP"
           mkdir -p build/Payload
-          cp -r "$ARCHIVE_APP" build/Payload/
+          cp -r "$COMPILED_APP" build/Payload/
           cd build
           zip -r -q -9 EmbyVision.ipa Payload
-          echo "IPA packaging complete!"
+          echo "### Build Succeeded!" >> $GITHUB_STEP_SUMMARY
+          echo "Successfully packaged EmbyVision.ipa" >> $GITHUB_STEP_SUMMARY
           ls -lh EmbyVision.ipa
 
       - name: Upload IPA Artifact
