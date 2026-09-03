@@ -1,48 +1,40 @@
 @echo off
 chcp 65001 >nul
-title EmbyVision iOS 一键推送到 GitHub 云端打包 IPA
+title EmbyVision iOS 杜比视界播放器 - 一键推送到 GitHub 云端打包
 
-echo ========================================================
-echo       EmbyVision iOS 杜比视界播放器 - 云端打包助手
-echo ========================================================
+echo ====================================================================
+echo       EmbyVision iOS 杜比视界播放器 - GitHub 云端打包一键推送
+echo ====================================================================
 echo.
-echo 本脚本将协助您将工程推送到您的 GitHub 仓库，触发 GitHub Actions 免费云端打包出 IPA！
+echo 目标仓库: https://github.com/Luofeng-Cloud/sqkd.git
+echo 当前分支: main
+echo.
+echo [*] 正在推送代码至 GitHub (若弹出浏览器授权窗口，请点击 Authorize 确认)...
 echo.
 
-set /p REPO_URL=请输入您的 GitHub 仓库地址 (例如 https://github.com/YourUsername/EmbyVision.git): 
-
-if "%REPO_URL%"=="" (
-    echo.
-    echo [错误] 仓库地址不能为空！请重新运行脚本。
-    pause
-    exit /b 1
-)
-
-echo.
-echo [*] 正在设置 Git 远程仓库...
-git remote remove origin 2>nul
-git remote add origin %REPO_URL%
-
-echo [*] 正在推送到 GitHub 并创建 main 分支...
-git branch -M main
 git push -u origin main
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo [!] 推送遇到问题，请检查：
-    echo 1. 仓库地址是否正确？
-    echo 2. 是否已在 GitHub 上创建该仓库？
-    echo 3. 是否具备写入权限（若提示输入 Token，请使用 GitHub Personal Access Token 代替密码）。
+    echo ====================================================================
+    echo [提示] 推送若提示鉴权失败，请检查：
+    echo 1. 弹出的 GitHub 授权窗口是否已点击授权；
+    echo 2. 若仓库已有其他初始文件(如 README/License)，可输入 y 强制覆盖推送：
+    set /p FORCE_PUSH=是否强制覆盖推送到 main 分支？(y/n): 
+    if /i "%FORCE_PUSH%"=="y" (
+        git push -u origin main --force
+    )
+    echo ====================================================================
 ) else (
     echo.
-    echo ========================================================
-    echo [成功] 代码已成功推送到 GitHub！
+    echo ====================================================================
+    echo [成功] 全部代码已成功推送到您的 GitHub 仓库！
     echo.
-    echo 请立即前往您的 GitHub 仓库页面:
-    echo 1. 点击顶部的 [Actions] 标签页；
-    echo 2. 可以看到 [Build iOS IPA (EmbyVision)] 正在自动编译；
-    echo 3. 约 5-8 分钟编译完成后，在详情页底部的 [Artifacts] 下载 IPA 安装包！
-    echo ========================================================
+    echo 自动化打包已在云端自动触发，请立即查看：
+    echo 👉 https://github.com/Luofeng-Cloud/sqkd/actions
+    echo.
+    echo 约 5-8 分钟编译完成后，页面底部的 [Artifacts] 会生成 EmbyVision.ipa！
+    echo ====================================================================
 )
 
 echo.
