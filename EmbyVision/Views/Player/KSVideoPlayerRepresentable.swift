@@ -7,7 +7,6 @@ import AVKit
 import KSPlayer
 #endif
 
-/// 播放器配置模型
 public struct PlayerConfiguration {
     public let url: URL
     public let title: String
@@ -36,7 +35,6 @@ public struct PlayerConfiguration {
     }
 }
 
-/// 现代高性能杜比视界播放核心组件
 public struct VideoPlayerCoreView: View {
     public let config: PlayerConfiguration
     @Binding public var currentTime: Double
@@ -47,25 +45,36 @@ public struct VideoPlayerCoreView: View {
     
     public var body: some View {
         #if canImport(KSPlayer)
-        let options = KSOptions()
-        options.hardwareDecode = true
-        options.firstPlayerType = KSMEPlayer.self
-        options.secondPlayerType = KSAVPlayer.self
-        options.canProcessPicture = true
-        options.preferredForwardBufferDuration = 30.0
-        
-        return KSVideoPlayerView(url: config.url, options: options, title: config.title)
-            .ignoresSafeArea()
+        ksPlayerView
         #else
+        avPlayerFallbackView
+        #endif
+    }
+    
+    #if canImport(KSPlayer)
+    @ViewBuilder
+    private var ksPlayerView: some View {
+        let options = KSOptions()
+        KSVideoPlayerView(url: config.url, options: options, title: config.title)
+            .ignoresSafeArea()
+            .onAppear {
+                options.hardwareDecode = true
+                options.firstPlayerType = KSMEPlayer.self
+                options.secondPlayerType = KSAVPlayer.self
+                options.canProcessPicture = true
+                options.preferredForwardBufferDuration = 30.0
+            }
+    }
+    #endif
+    
+    private var avPlayerFallbackView: some View {
         AVPlayerFallbackView(url: config.url, initialSeconds: config.initialPositionSeconds) {
             onPlaybackEnded()
         }
         .ignoresSafeArea()
-        #endif
     }
 }
 
-/// 原生 AVPlayer 备用硬件渲染管线
 struct AVPlayerFallbackView: UIViewControllerRepresentable {
     let url: URL
     let initialSeconds: Double

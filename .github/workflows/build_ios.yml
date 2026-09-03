@@ -40,7 +40,11 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             AD_HOC_CODE_SIGNING_ALLOWED=YES \
-            COMPILER_INDEX_STORE_ENABLE=NO
+            COMPILER_INDEX_STORE_ENABLE=NO > build.log 2>&1 || {
+              echo "=== XCODEBUILD ERROR SUMMARY ==="
+              grep -E -A 2 -B 1 "error:|fatal error:" build.log || tail -n 80 build.log
+              exit 1
+            }
 
       - name: Package Payload into IPA
         run: |
