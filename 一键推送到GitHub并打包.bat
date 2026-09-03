@@ -1,6 +1,6 @@
 @echo off
 title EmbyVision - Git Push to GitHub
-cd /d "D:\Antigravity对话保存位置\EmbyVision_iOS"
+cd /d D:\EmbyVision
 
 echo ====================================================================
 echo      EmbyVision iOS - Pushing code to GitHub Actions
