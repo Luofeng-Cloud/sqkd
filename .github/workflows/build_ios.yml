@@ -34,30 +34,20 @@ jobs:
             -project EmbyVision.xcodeproj \
             -scheme EmbyVision \
             -configuration Release \
-            -destination "generic/platform=iOS" \
+            -sdk iphoneos \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            COMPILER_INDEX_STORE_ENABLE=NO > build.log 2>&1 || {
-              echo "### Build Failed Log Tail" >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-              tail -n 60 build.log >> $GITHUB_STEP_SUMMARY
-              echo '```' >> $GITHUB_STEP_SUMMARY
-              cat build.log | grep -E -A 2 -B 1 "error:|fatal error:" || tail -n 60 build.log
-              exit 1
-            }
+            COMPILER_INDEX_STORE_ENABLE=NO
 
       - name: Package Payload into IPA
         run: |
-          COMPILED_APP=$(find build/Build/Products/Release-iphoneos -name "*.app" -type d | head -n 1)
-          echo "Found compiled app: $COMPILED_APP"
           mkdir -p build/Payload
-          cp -r "$COMPILED_APP" build/Payload/
+          find build/Build/Products/Release-iphoneos -name "*.app" -maxdepth 1 -exec cp -r {} build/Payload/ \;
           cd build
           zip -r -q -9 EmbyVision.ipa Payload
-          echo "### Build Succeeded!" >> $GITHUB_STEP_SUMMARY
-          echo "Successfully packaged EmbyVision.ipa" >> $GITHUB_STEP_SUMMARY
+          echo "IPA packaging complete!"
           ls -lh EmbyVision.ipa
 
       - name: Upload IPA Artifact
