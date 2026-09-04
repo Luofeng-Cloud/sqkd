@@ -355,65 +355,102 @@ public struct PlayerOverlayView: View {
         }
     }
     
-    // MARK: - 字幕选择弹窗
+            // MARK: - 字幕选择与微调弹窗
+    @State private var subtitleDelaySeconds: Double = 0.0
+    
     private var subtitlePickerView: some View {
         NavigationView {
             List {
-                Button(action: {
-                    selectedSubtitleIndex = -1
-                    showSubtitleSheet = false
-                }) {
-                    HStack {
-                        Text("关闭字幕")
-                            .foregroundColor(.primary)
-                        Spacer()
-                        if selectedSubtitleIndex == -1 {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.blue)
+                Section(header: Text("字幕时间轴微调 (±0.1s 步进)")) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("当前偏移: ")
+                                .font(.subheadline)
+                            Text(String(format: "%+.1f 秒", subtitleDelaySeconds))
+                                .font(.headline)
+                                .foregroundColor(subtitleDelaySeconds == 0 ? .primary : .blue)
+                            Spacer()
+                            Button("重置") {
+                                subtitleDelaySeconds = 0.0
+                            }
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.gray.opacity(0.15))
+                            .cornerRadius(6)
+                        }
+                        
+                        HStack(spacing: 12) {
+                            Button("-0.5s") { subtitleDelaySeconds -= 0.5 }
+                                .buttonStyle(.bordered)
+                            Button("-0.1s") { subtitleDelaySeconds -= 0.1 }
+                                .buttonStyle(.borderedProminent)
+                            Button("+0.1s") { subtitleDelaySeconds += 0.1 }
+                                .buttonStyle(.borderedProminent)
+                            Button("+0.5s") { subtitleDelaySeconds += 0.5 }
+                                .buttonStyle(.bordered)
                         }
                     }
+                    .padding(.vertical, 6)
                 }
                 
-                ForEach(Array(subtitleStreams.enumerated()), id: \.offset) { index, stream in
+                Section(header: Text("字幕轨道")) {
                     Button(action: {
-                        selectedSubtitleIndex = index
+                        selectedSubtitleIndex = -1
                         showSubtitleSheet = false
                     }) {
                         HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(stream.displayTitle ?? stream.title ?? "字幕 \(index + 1)")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                
-                                HStack(spacing: 6) {
-                                    if let lang = stream.language {
-                                        Text(lang)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                    }
-                                    if stream.isDefault {
-                                        Text("默认")
-                                            .font(.caption2)
-                                            .padding(2)
-                                            .background(Color.blue.opacity(0.2))
-                                            .cornerRadius(3)
-                                    }
-                                }
-                            }
+                            Text("关闭字幕")
+                                .foregroundColor(.primary)
                             Spacer()
-                            if selectedSubtitleIndex == index {
+                            if selectedSubtitleIndex == -1 {
                                 Image(systemName: "checkmark")
                                     .foregroundColor(.blue)
                             }
                         }
                     }
+                    
+                    ForEach(Array(subtitleStreams.enumerated()), id: \.offset) { index, stream in
+                        Button(action: {
+                            selectedSubtitleIndex = index
+                            showSubtitleSheet = false
+                        }) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(stream.displayTitle ?? stream.title ?? "字幕 \(index + 1)")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    
+                                    HStack(spacing: 6) {
+                                        if let lang = stream.language {
+                                            Text(lang)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                        if stream.isDefault {
+                                            Text("默认")
+                                                .font(.caption2)
+                                                .padding(2)
+                                                .background(Color.blue.opacity(0.2))
+                                                .cornerRadius(3)
+                                        }
+                                    }
+                                }
+                                Spacer()
+                                if selectedSubtitleIndex == index {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            .navigationTitle("选择字幕")
+            .navigationTitle("字幕与特效调节")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("关闭") { showSubtitleSheet = false }
+                    Button("完成") { showSubtitleSheet = false }
                 }
             }
         }

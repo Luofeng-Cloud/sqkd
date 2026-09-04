@@ -1,4 +1,4 @@
-name: Build iOS IPA (EmbyVision)
+name: Build iOS IPA (OnyxVision)
 
 on:
   push:
@@ -36,8 +36,8 @@ jobs:
         run: |
           mkdir -p build
           xcodebuild clean build \
-            -project EmbyVision.xcodeproj \
-            -scheme EmbyVision \
+            -project OnyxVision.xcodeproj \
+            -scheme OnyxVision \
             -configuration Release \
             -sdk iphoneos \
             -derivedDataPath build \
@@ -62,13 +62,13 @@ jobs:
           mkdir -p build/Payload
           find build/Build/Products/Release-iphoneos -name "*.app" -maxdepth 1 -exec cp -r {} build/Payload/ \;
           cd build
-          zip -r -q -9 EmbyVision.ipa Payload
+          zip -r -q -9 OnyxVision.ipa Payload
           echo "IPA packaging complete!"
-          ls -lh EmbyVision.ipa
+          ls -lh OnyxVision.ipa
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EmbyVision-iOS-IPA
-          path: build/EmbyVision.ipa
+          name: OnyxVision-iOS-IPA
+          path: build/OnyxVision.ipa
           retention-days: 14

@@ -1,14 +1,15 @@
-name: EmbyVision
+name: OnyxVision
 options:
-  bundleIdPrefix: com.embyvision
+  bundleIdPrefix: com.onyxvision
   deploymentTarget:
     iOS: 16.0
-  xcodeVersion: "15.0"
+  xcodeVersion: "16.0"
   createIntermediateGroups: true
 settings:
   SWIFT_VERSION: "5.9"
   IPHONEOS_DEPLOYMENT_TARGET: "16.0"
   ENABLE_BITCODE: NO
+  AD_HOC_CODE_SIGNING_ALLOWED: YES
 
 packages:
   KSPlayer:
@@ -16,12 +17,12 @@ packages:
     branch: main
 
 targets:
-  EmbyVision:
+  OnyxVision:
     type: application
     platform: iOS
     deploymentTarget: "16.0"
     sources:
-      - path: EmbyVision
+      - path: OnyxVision
         excludes:
           - "Resources/Info.plist"
     dependencies:
@@ -30,13 +31,15 @@ targets:
     scheme:
       gatherCoverageData: false
     info:
-      path: EmbyVision/Resources/Info.plist
+      path: OnyxVision/Resources/Info.plist
     settings:
-      PRODUCT_BUNDLE_IDENTIFIER: com.embyvision.player
+      PRODUCT_NAME: OnyxVision
+      PRODUCT_BUNDLE_IDENTIFIER: com.onyxvision.player
       GENERATE_INFOPLIST_FILE: NO
-      INFOPLIST_FILE: EmbyVision/Resources/Info.plist
-      MARKETING_VERSION: 1.0.0
+      INFOPLIST_FILE: OnyxVision/Resources/Info.plist
+      MARKETING_VERSION: 2.0.0
       CURRENT_PROJECT_VERSION: 1
       CODE_SIGNING_ALLOWED: NO
       CODE_SIGNING_REQUIRED: NO
       CODE_SIGN_IDENTITY: ""
+      AD_HOC_CODE_SIGNING_ALLOWED: YES

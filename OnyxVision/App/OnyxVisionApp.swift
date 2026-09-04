@@ -1,8 +1,10 @@
 import SwiftUI
 
 @main
-struct EmbyVisionApp: App {
+struct OnyxVisionApp: App {
     @StateObject private var env = AppEnvironment.shared
+    @StateObject private var cloudSync = iCloudSyncManager.shared
+    @StateObject private var multiSource = MultiSourceManager.shared
     
     var body: some Scene {
         WindowGroup {
@@ -18,7 +20,7 @@ struct EmbyVisionApp: App {
                     ServerLoginView(currentServer: $env.currentServer)
                 }
             }
-            .preferredColorScheme(.dark) // 影音专属纯黑电影院模式，保护 HDR 高动态对比度
+            .preferredColorScheme(.dark) // 曜石影音专属纯黑电影院模式，全额激发 OLED 杜比视界高对比度
         }
     }
 }

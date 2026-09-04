@@ -27,10 +27,10 @@ public class EmbyAPIService: ObservableObject {
     public static let shared = EmbyAPIService()
     
     private let session: URLSession
-    private let clientName = "EmbyVision-iOS"
+    private let clientName = "OnyxVision-iOS"
     private let deviceName = "iPhone"
     private let deviceId: String
-    private let appVersion = "1.0.0"
+    private let appVersion = "2.0.0"
     
     private init() {
         let config = URLSessionConfiguration.default
